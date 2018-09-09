@@ -19,6 +19,7 @@ class Likemode_realistic extends Manager_state {
         this.cache_hash_tags = [];
         this.tweet_liked = [];
         this.tweet_current = "";
+        this.hashtag_current = "";
         this.LOG_NAME = "like_realistic";
         this.STATE = require("../common/state").STATE;
         this.STATE_EVENTS = require("../common/state").EVENTS;
@@ -46,6 +47,7 @@ class Likemode_realistic extends Manager_state {
      */
     async open_hashtagpage() {
         let hashtag_tag = this.utils.get_random_hash_tag();
+        this.hashtag_current = hashtag_tag;
         this.log.info(`current hashtag ${hashtag_tag}`);
         try {
             await this.bot.goto("https://twitter.com/search?f=tweets&vertical=default&q=" + hashtag_tag + "&src=typd&l="+this.config.twitter_language);
@@ -135,6 +137,7 @@ class Likemode_realistic extends Manager_state {
                 this.log.warning("</3 liked previously");
             }else{
                 await button.click();
+                this.emit('like', { tweet: this.tweet_current, hashtag: this.hashtag_current});
                 this.log.info("<3");
             }
             this.emit(this.STATE_EVENTS.CHANGE_STATUS, this.STATE.OK);

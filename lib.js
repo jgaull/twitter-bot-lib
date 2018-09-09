@@ -92,7 +92,13 @@ module.exports = function(config) {
         async function switch_mode(log) {
             let strategy = routes[config.bot_mode];
             if (strategy !== undefined) {
-                await strategy(bot, config, utils).start();
+                const strat = strategy(bot, config, utils);
+
+                if (typeof config.onLoadStrategy === 'function') {
+                    config.onLoadStrategy(strat);
+                }
+
+                await strat.start();
             } else {
                 log(LOG.ERROR, "switch_mode", `mode ${strategy} not exist!`);
             }
